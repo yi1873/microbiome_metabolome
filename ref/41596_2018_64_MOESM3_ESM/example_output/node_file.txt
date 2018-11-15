@@ -1,0 +1,61 @@
+Node_name	Description	Examples
+M02	Sugar derivatives	Unknown sugar derivatives
+M08	Sugar derivatives	Unknown sugar derivatives
+M09	branched chain keto-acids	2-oxovaleric acid
+M10	branched chain amino acids, other organic acids	leucine, proline, 2-aminobutyric acid
+M11	Amino acids	glutamic acid, aspartic acid
+M12	TCA cycle metabolites	pyruvic acid, lactic acid, _-ketoglutaric acid
+L04	PEs	PE(40:6)
+L05	Polyunsaturated TGs	TG(59:5), TG(56:7), TG(50:5)
+L10	Polyunsaturated TGs	TG(53:3), TG(54:4), TG(56:3)
+L11	TGs	TG(54:2),TG(54:5), TG(51:1)
+L12	Polyunsaturated TGs	 TG(56:6), TG(56:5), TG(58:5)
+L14	Ceramides and SMs	Cer(d18:1/16:0), SM(d18:1/16:0)
+L15	Ether lipids and polyunsatyrated TGs	PC(38:3e), TG(51:6), PC(40:4e), PC(40:4e)
+L18	PCs and PEs, ether lipids	PE(32:1), PC(34:2e), PC(34:2e), PE(40:7e)
+L19		PC(40:3e), SM(d18:1/24:1)
+L20		SM(d18:1/26:2)
+L21	TGs	TG(54:2), TG(56:4), unknown TGs
+L30	LysoPCs and lysoPEs	LysoPC(20:4), LysoPC(18:2), LysoPC(18:3)
+L31	TGs	TG(46:3), TG(52:0), TG(48:4)
+L32	Unknown ChoEs	
+L36	PCs	PC(40:3), PC(40:4), PC(38:3)
+M00124	Pyridoxal biosynthesis, erythrose-4P => pyridoxal-5P	
+M00570	Isoleucine biosynthesis, threonine => 2-oxobutanoate => isoleucine	
+M00432	Leucine biosynthesis, 2-oxoisovalerate => 2-oxoisocaproate	
+M00208	Glycine betaine/proline transport system	
+M00237	Branched-chain amino acid transport system	
+M00357	Methanogenesis, acetate => methane	
+M00535	Isoleucine biosynthesis, pyruvate => 2-oxobutanoate	
+M00061	Uronic acid metabolism	
+M00530	Dissimilatory nitrate reduction, nitrate => ammonia	
+M00239	Peptides/nickel transport system	
+M00307	Pyruvate oxidation, pyruvate => acetyl-CoA	
+M00149	Succinate dehydrogenase, prokaryotes	
+M00019	Valine/isoleucine biosynthesis, pyruvate => valine / 2-oxobutanoate => isoleucine	
+M00348	Glutathione transport system	
+M00390	Exosome, archaea	
+M00188	NitT/TauT family transport system	
+M00063	CMP-KDO biosynthesis	
+M00563	Methanogenesis, methylamine/dimethylamine/trimethylamine  => methane	
+M00060	Lipopolysaccharide biosynthesis, KDO2-lipid A	
+M00179	Ribosome, archaea	
+M00332	Type III secretion system	
+M00122	Cobalamin biosynthesis, cobinamide => cobalamin	
+M00440	Nickel transport system	
+M00360	Aminoacyl-tRNA biosynthesis, prokaryotes	
+M00184	RNA polymerase, archaea	
+M00567	Methanogenesis, CO2 => methane	
+M00356	Methanogenesis, methanol => methane	
+M00310	Pyruvate:ferredoxin oxidoreductase	
+M00230	Glutamate/aspartate transport system	
+M00127	Thiamine biosynthesis, AIR => thiamine-P/thiamine-2P	
+M00023	Tryptophan biosynthesis, chorismate => tryptophan	
+M00178	Ribosome, bacteria	
+M00259	Heme transport system	
+M00311	2-oxoglutarate:ferredoxin oxidoreductase	
+M00048	Inosine monophosphate biosynthesis, PRPP + glutamine => IMP	
+M00439	Oligopeptide transport system	
+M00197	Putative fructooligosaccharide transport system	
+M00159	V-type ATPase, prokaryotes	
+M00051	Uridine monophosphate biosynthesis, glutamine (+ PRPP) => UMP	

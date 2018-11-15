@@ -1,0 +1,182 @@
+---
+title: "宏基因组、代谢组和表型信息关联分析"
+date: '`r format(Sys.time(), "%B %d, %Y")`'
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Information
+* Paper: [A computational framework to integrate high-throughput ‘-omics’ datasets for the identification of potential mechanistic links](https://www.nature.com/articles/s41596-018-0064-z#Sec30)
+* Supplementary information: https://www.nature.com/articles/s41596-018-0064-z#Sec30
+* 整理成R markdown格式，用测试数据测试
+
+## Stage I. starting an R session with all required packages and input file 
+
+* Input data download from https://www.nature.com/articles/s41596-018-0064-z#Sec30; 
+* 将example_input.zip解压至Rmd目录下的data文件夹，即可直接运行该Rmd
+```{r, eval=T, echo = T, tidy = TRUE, size="small", cache=FALSE, warning=FALSE}
+source("Rscripts/step2_load.libraries.R") 
+source("Rscripts/step3_import.input.files.R")  
+source("Rscripts/step4_preprocessing.data.for.sparsity.R")
+```
+
+## Stage II: co-abundant clustering of metabolome data
+
+* WGCNA clustering is performed separately on lipidomic and metabolomic measurements to detect clusters of densely connected metabolites/lipids.
+```{r, eval=T, echo = T, tidy = TRUE, size="small", cache=FALSE, warning=FALSE}
+source("Rscripts/step5_identify.WGCNA.clusters.for.metabolites.R")
+
+dir.create("./results")
+source("Rscripts/step6_associate.metabolites.with.phenotype.R")
+source("Rscripts/step7a_identify.WGCNA.clusters.for.lipids.R")
+source("Rscripts/step7b_associate.lipids.with.phenotype.R")
+```
+
+
+## Stage III: phenotype filterin
+
+* This analysis stage generates associations between the dimensionality-reduced -omics data and a clinically interesting phenotype
+```{r, eval=T, echo = T, tidy = TRUE, size="small", cache=FALSE, warning=FALSE}
+source("Rscripts/step8_associate.metabolite.clusters.with.phenotype.R")
+source("Rscripts/step9_associate.MGSs.with.phenotype.R")
+source("Rscripts/step10_associate.KEGG.modules.with.phenotype.R")
+
+source("Rscripts/step11_save.phenotype.associations.R")
+source("Rscripts/step12_select.significant.features.R")
+```
+
+## Stage IV: cross-domain association analyses
+
+* This stage tests the association of the set of metabolite clusters associated with the phenotype of interest with the set of functional metagenome features likewise so associated.
+```{r, eval=T, echo = T, tidy = TRUE, size="small", cache=FALSE, warning=FALSE}
+source("Rscripts/step13_associate.metabolite.clusters.with.KOs.R")
+source("Rscripts/step14_associate.metabolite.clusters.with.KEGG.modules.R")
+```
+
+* Plot metabolome–microbiome functional analysis results (heatmap)
+```{r, eval = T, echo = F, size="small", fig.align = 'center', fig.height = 18, fig.width = 18, out.width="90%", fig.showtext = T, cache=FALSE,}
+# source("Rscripts/step15_plot.metabolome.microbiome.functional.analysis.R")
+source("Rscripts/heatmap_3.R")
+
+kegg_metlip_p_adj = p.adjust (kegg_metlip_p, method = "BH")
+dim (kegg_metlip_p_adj) = dim (kegg_metlip_p)
+rownames (kegg_metlip_p_adj) = rownames (kegg_metlip_p)
+colnames (kegg_metlip_p_adj) = colnames (kegg_metlip_p)
+
+tmp = kegg_metlip_p_adj < final.fdr.cutoffs
+issig = rowSums (tmp, na.rm = T)
+kegg = na.omit (names (issig [issig > 0]))
+length (kegg)
+issig = colSums (tmp, na.rm=T)
+metlip = na.omit (names (issig [issig > 0]))
+length (metlip)
+
+### create matrix for heatmap
+plotmat = kegg_metlip_est [kegg, metlip]
+
+### create matrix with significance stars
+plotmat_p = kegg_metlip_p_adj [kegg, metlip] ### p-values to make stars for heatmap
+stars = matrix ("", ncol = ncol (plotmat_p), nrow = nrow (plotmat_p))
+rownames (stars) = rownames (plotmat_p)
+colnames (stars) = colnames (plotmat_p)
+for (z in 1:ncol (stars)) {
+  for (j in 1:nrow (stars)) {
+    if (plotmat_p [j, z] < 0.1) {
+      stars [j, z] = "+"
+    }
+    if (plotmat_p [j, z] < 0.01) {
+      stars [j, z] = "*"
+    }
+    if (plotmat_p [j, z] < 0.001) {
+      stars [j, z] = "**"
+    }
+  }
+}
+rm (plotmat_p)
+
+### make sidebar with phenotype associations
+pheno = c ("HOMA.ir", "HOMA.ir_BMI.adj.partial")
+phenobar = matrix (NA, ncol = length (pheno), nrow = length (kegg))
+colnames (phenobar) = pheno
+rownames (phenobar) = kegg
+
+for (j in pheno) {
+  tmp = p.adjust (cor_HOMA.IR$keggmodules [ , j, "p.value"], method="BH") ### adjust column wise on phenotypes
+  for (k in kegg) {
+    if (tmp [k] >= 0.1) {
+      phenobar [k, j] = "grey"
+    } else {
+      if (cor_HOMA.IR$keggmodules [k , j, "estimate"] > 0) {
+        phenobar [k, j] = "darkblue"
+      } else if (cor_HOMA.IR$keggmodules [k , j, "estimate"] < 0){
+        phenobar[k, j] = "darkred"
+      } else {
+        phenobar[k, j] = "white"
+      }
+    }
+  }
+}
+
+### Rename column names of phenobar
+colnames (phenobar) = c("HOMA-IR", "HOMA-IR.BMI.adj")
+
+### cluster rows of matrix
+d = dist (plotmat)
+dend = as.dendrogram (hclust (d, method = "average"))
+rm (d)
+
+### cluster columns of matrix
+d2 = dist (t (plotmat))
+dend2 = as.dendrogram (hclust (d2, method = "average"))
+rm (d2)
+
+### make heatmap with all the selected KEGG modules
+heatmap.3 (plotmat,
+           Rowv = dend,
+           Colv = dend2,
+           dendrogram = "column",
+           col = rev (redblue (100)),
+           symbreaks = T,
+           key = T,
+           symkey = T,
+           keysize = 1,
+           KeyValueName = "SCC.bg.adj",
+           lhei = c(0.6, 4),
+           cellnote = stars,
+           notecol = "black",
+           notecex = 1.1,
+           trace = "none",
+           labRow = module_mapping_clean [rownames (plotmat)],
+           labCol = cluster_mapping_file [match( colnames (plotmat), cluster_mapping_file$New_Name), "label"],
+           RowSideColors = t (phenobar [rownames (plotmat), ]),
+           side.height.fraction = 0.35,
+           NumColSideColors = dim (phenobar) [2],
+           margins = c (23, 33),
+           cexRow = 1,
+           cexCol = 1
+)
+
+```
+
+* (Optional) Export metabolome–microbiome associations for network analysis, visualizing and analyzing networks in **Cytoscape**
+```{r,eval=T, echo = T, tidy = TRUE, size="small", cache=FALSE, warning=FALSE}
+source("Rscripts/step16_export.edge.node.files.R")
+```
+
+
+## Stage V: driver-species analysis
+
+* This stage of the analysis allows users to test which bacterial taxa (in the sense of MGS as defined from the metagenomic datasets themselves) are driving the functional effects seen, enabling assessment of the extent to which different taxa explain a functional potential association with a phenotype of interest.
+```{r, eval=T, echo = T, tidy = TRUE, size="small", cache=FALSE, warning=FALSE}
+# 耗时,之前跑出结果，Rmd暂不运行
+#source("Rscripts/step17_leave.one.MGS.out.analysis.R")  # ~1 h
+#source("Rscripts/step18_extract.top.driver.species.R")
+#if( !("density_plot_SCC_HOMA.IR.pdf" %in% dir("./results/"))){
+#    source("Rscripts/step19_plot.leave.one.MGS.out.results.R")
+#}
+```
+
