@@ -184,9 +184,8 @@ Stage V: driver-species analysis
 -   This stage of the analysis allows users to test which bacterial taxa (in the sense of MGS as defined from the metagenomic datasets themselves) are driving the functional effects seen, enabling assessment of the extent to which different taxa explain a functional potential association with a phenotype of interest.
 
 ``` r
-# <U+8017><U+65F6>,<U+4E4B><U+524D><U+8DD1><U+51FA><U+7ED3><U+679C><U+FF0C>Rmd<U+6682><U+4E0D><U+8FD0><U+884C>
+# 较耗时，先不跑
 # source('Rscripts/step17_leave.one.MGS.out.analysis.R') # ~1 h
-# source('Rscripts/step18_extract.top.driver.species.R') if(
-# !('density_plot_SCC_HOMA.IR.pdf' %in% dir('./results/'))){
-# source('Rscripts/step19_plot.leave.one.MGS.out.results.R') }
+# source('Rscripts/step18_extract.top.driver.species.R') 
+# source('Rscripts/step19_plot.leave.one.MGS.out.results.R') 
 ```
